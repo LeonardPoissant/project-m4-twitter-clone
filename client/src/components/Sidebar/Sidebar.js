@@ -16,7 +16,6 @@ import { CurrentUserContext } from "../CurrentUser/CurrentUserContext";
 const Sidebar = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
 
-  console.log(currentUser);
   return (
     <StyledSidebar>
       <Logo />
@@ -24,7 +23,7 @@ const Sidebar = () => {
         <Icon icon={twitter}></Icon>
         Home
       </Link>
-      <Link to={`/profile/${currentUser.handle}`}>
+      <Link to={`/${currentUser.handle}`}>
         <Icon icon={briefcase}></Icon>
         Profile
       </Link>

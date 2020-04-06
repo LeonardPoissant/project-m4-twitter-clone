@@ -1,1 +1,1 @@
-export { default } from "./TweetDetails";
+export { default } from "./Tweet";

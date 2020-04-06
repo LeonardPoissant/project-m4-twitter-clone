@@ -10,10 +10,19 @@ import { CurrentUserContext } from "../CurrentUser/CurrentUserContext";
 
 import Profile from "../Profile/Profile";
 import HomeFeed from "../HomeFeed/HomeFeed";
+import { FeedContext } from "../FeedContext/FeedContext";
+import TweetDetails from "../TweetDetails/TweetDetails";
+import Tweet from "../Tweet/Tweet";
 
 function App() {
   const { status } = React.useContext(CurrentUserContext);
-  console.log(status);
+  const { tweets, tweetsStatus } = React.useContext(FeedContext);
+  React.useCallback(Tweet);
+  console.log("IN APPP", tweets);
+
+  //React.useEffect(() => {
+  //  console.log("USEEFFECT");
+  // }, [HomeFeed]);
   return (
     <>
       <GlobalStyles />
@@ -22,12 +31,14 @@ function App() {
           <SideBar />
           <Switch>
             <Route exact path="/">
-              <HomeFeed />
+              <HomeFeed tweets={tweets} tweetsStatus={tweetsStatus} />
             </Route>
             <Route path="/notifications">Notifications</Route>
             <Route path="/bookmarks">Bookmarks</Route>
-            <Route path="/tweet/:tweetId">TweetDetails</Route>
-            <Route path="/profile/:profile">
+            <Route path={`/tweet/:tweetId`}>
+              <TweetDetails />
+            </Route>
+            <Route path="/:profileId">
               <Profile />
             </Route>
           </Switch>

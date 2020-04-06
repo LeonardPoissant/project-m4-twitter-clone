@@ -2,6 +2,8 @@ import React from "react";
 
 import styled from "styled-components";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
+
 import { CurrentUserContext } from "../CurrentUser/CurrentUserContext";
 import { FeedContext } from "../FeedContext/FeedContext";
 import Tweet from "../Tweet/Tweet";
@@ -9,25 +11,71 @@ import Tweet from "../Tweet/Tweet";
 import styledAvatar from "../StyledAvatar/styledAvatar";
 
 import { COLORS } from "../../constants";
+//
+//const getTweets = tweets.tweetIds.map(tweet => tweets.tweetsById[tweet]);
 
 const HomeFeed = () => {
-  const { currentUser } = React.useContext(CurrentUserContext);
-  const { tweets } = React.useContext(FeedContext);
-  console.log(tweets);
+  const { currentUser, status } = React.useContext(CurrentUserContext);
+  const  {
+     tweets, 
+     tweetsStatus,
+    actions:{addTweet}
+   } = React.useContext(FeedContext);
+  const [tweetInput, setTweetInput] = React.useState({});
 
-  const tweetId = Object.values(tweets);
+  console.log(tweetsStatus);
 
-  console.log("tweetId", tweetId);
+  if (!status) {
+    return <CircularProgress />;
+  }
+
+  if (!tweetsStatus) {
+    return <CircularProgress />;
+  }
+  const getTweets =
+    Object.keys(tweets).length !== 0
+      ? Object.values(tweets.tweetIds).map((tweet) => tweets.tweetsById[tweet])
+      : [];
+
+  //React.useEffect(() => {
+  // console.log("USEEFFECT");
+  //}, []); Trouver oz est la list ajouter le tweet à la liste dans la réponse
 
   return (
     <Wrapper>
       <Title>Home</Title>
-      <TweetBox>
+      <TweetBox
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          fetch(`/api/tweet`, {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              status: tweetInput,
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              addTweet();
+            });
+        }}
+      >
         <Avatar src={`${currentUser.avatarSrc}`} />
-        <TweetInput placeholder="Time to Moew" />
+
+        <TweetInput
+          placeholder="Time to Moew"
+          maxLength="280"
+          onChange={(ev) => setTweetInput(ev.currentTarget.value)}
+        />
+        <MeowButton>Moew</MeowButton>
       </TweetBox>
-      <MeowButton>Moew</MeowButton>
-      <Tweet />
+
+      {getTweets.map((tweet) => {
+        return <Tweet tweet={tweet} />;
+      })}
     </Wrapper>
   );
 };
@@ -49,7 +97,7 @@ const TweetBox = styled.form`
   flex-direction: column;
 `;
 
-const TweetInput = styled.input`
+const TweetInput = styled.textarea`
   border: none;
   width: 100px;
   height: 60px;
